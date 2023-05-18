@@ -4,7 +4,7 @@ import { useAppNavbar } from "./hooks/useAppNavbar"
 import { MobileDropDownMenu } from "./MobileDropDownMenu"
 
 export const AppNavbar = () => {
-  const { isShowMobileDropDownMenu, onMobileMenuHandlerClick } = useAppNavbar()
+  const { user, isShowMobileDropDownMenu, onMobileMenuHandlerClick } = useAppNavbar()
 
   return (
     <header className="bg-slate-300 text-slate-800">
@@ -16,7 +16,7 @@ export const AppNavbar = () => {
             <h1 className=" font-bold transition-opacity hover:opacity-70">companyName</h1>
           </NavLink>
           <ul className="flex items-center justify-between">
-            <div className="hidden md:flex md:items-center md:justify-between md:gap-8">
+            {!user && <div className="hidden md:flex md:items-center md:justify-between md:gap-8">
               <li>
                 <NavLink
                   className="font-medium transition-opacity hover:opacity-70"
@@ -33,7 +33,7 @@ export const AppNavbar = () => {
                   SignUp
                 </NavLink>
               </li>
-            </div>
+            </div>}
             <li className="md:hidden">
               <svg 
                 data-v-5306269d="" 
