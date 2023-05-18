@@ -5,12 +5,10 @@ import { useSignInForm } from "./hooks/useSignInForm"
 export const SignInForm = () => {
   const { email, password, loading, inValidEmail, inValidPassword, emailChangeHandler, passwordChangeHandler, signInFormHandler, googlePopupSignInHandler } = useSignInForm()
 
-  console.log('test')
-
   return (
     <div className="bg-slate-300 text-slate-800 px-6 py-4 rounded-lg shadow-xl sm:py-8">
       <form onSubmit={signInFormHandler}>
-        <h1 className="font-medium text-2xl mb-4 sm:text-3xl sm:mb-6">Company Name or Logo</h1>
+        <h1 className="font-medium text-xl mb-4 sm:text-3xl sm:mb-6">Company Name or Logo</h1>
         <div className="mb-4 sm:mb-6">
           <p className="text-sm sm:text-base">Welcome back</p>
           <h2 className="text-xl font-medium sm:text-2xl">Sign In to your account</h2>
@@ -72,7 +70,7 @@ export const SignInForm = () => {
       </div>
       <div className="text-center">
         {inValidPassword && <p className="text-red-600 text-sm">wrong password</p>}
-        {inValidEmail && <p className="text-red-600 text-sm">wrong email</p>}
+        {inValidEmail && <p className="text-red-600 text-sm">wrong email or user not found</p>}
       </div>
     </div>
   )
