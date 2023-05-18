@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
-import { User, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth"
+import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth"
 
 import { auth, provider } from "../utils/firebase"
 
@@ -10,6 +10,11 @@ export interface SignInCredentials {
 
 export const signIn = createAsyncThunk<User, SignInCredentials>("auth/signIn", async ({ email, password }) => {
   const response = await signInWithEmailAndPassword(auth, email, password)
+  return response.user as User
+})
+
+export const signUp = createAsyncThunk<User, SignInCredentials>("auth/signUp", async ({ email, password }) => {
+  const response = await createUserWithEmailAndPassword(auth, email, password)
   return response.user as User
 })
 
@@ -59,6 +64,19 @@ const authSlice = createSlice({
         state.user = action.payload
       })
       .addCase(signInWithGoogle.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message || "Something went wrong..."
+      })
+    builder
+      .addCase(signUp.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(signUp.fulfilled, (state, action: PayloadAction<User>) => {
+        state.loading = false
+        state.user = action.payload
+      })
+      .addCase(signUp.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message || "Something went wrong..."
       })

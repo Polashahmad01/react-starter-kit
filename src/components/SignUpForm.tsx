@@ -1,43 +1,57 @@
 import { Link } from "react-router-dom"
 
+import { useSignUpForm } from "./hooks/useSignUpForm"
+
 export const SignUpForm = () => {
+  const { email, password, loading, emailInUse, weakPassword, emailChangeHandler, passwordChangeHandler, signUpFormHandler, signUpWithPopHandler } = useSignUpForm()
 
   return (
-    <div className="bg-slate-300 text-slate-800 px-6 py-8 rounded-lg shadow-xl">
-      <h1 className="font-medium text-3xl mb-6">Company Name or Logo</h1>
-      <div className="mb-6">
-        <p className="text-base">Welcome</p>
-        <h2 className="text-2xl font-medium">Sign Up a new account</h2>
-      </div>
-
-      <div className="flex flex-col mb-4">
-        <label className="mb-1" htmlFor="email">Email</label>
-        <input className="px-3 py-3 rounded-md focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-black" type="email" placeholder="john.doe@gmail.com" />
-        {false && <p className="mt-1 text-sm text-red-600">Error Message</p>}
-      </div>
-
-      <div className="flex flex-col mb-4">
-        <label className="mb-1" htmlFor="password">Password</label>
-        <input className="px-3 py-3 rounded-md focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-black" type="password" placeholder="password" />
-        {false && <p className="mt-1 text-sm text-red-600">Error Message</p>}
-      </div>
-
-      <div className="flex flex-col mb-6">
-        <label className="mb-1" htmlFor="password">Confirm Password</label>
-        <input className="px-3 py-3 rounded-md focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-black" type="password" placeholder="password" />
-        {false && <p className="mt-1 text-sm text-red-600">Error Message</p>}
-      </div>
-
-      <div className="flex justify-center items-center mb-4">
-        <button className="bg-black text-white px-3 py-3 w-full rounded-md transition-all hover:bg-gray-800">Sign Up</button>
-      </div>
-
-      <div className="flex justify-center items-center mb-4">
+    <div className="bg-slate-300 text-slate-800 px-6 py-4 rounded-lg shadow-xl sm:px-6 sm:py-8">
+      <form onSubmit={signUpFormHandler}>
+        <h1 className="font-medium text-xl mb-2 sm:text-3xl sm:mb-4">Company Name or Logo</h1>
+        <div className="mb-4 sm:mb-6">
+          <p className="text-sm sm:text-base">Welcome</p>
+          <h2 className="text-xl font-medium sm:text-2xl">Sign Up a new account</h2>
+        </div>
+        <div className="flex flex-col mb-2 sm:mb-4">
+          <label className="mb-1 text-sm sm:text-base" htmlFor="email">Email</label>
+          <input
+            className="px-2 py-2 rounded-md focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-black sm:px-3 sm:py-3"
+            type="email"
+            placeholder="john.doe@gmail.com"
+            onChange={emailChangeHandler}
+            value={email}
+            required
+          />
+        </div>
+        <div className="flex flex-col mb-4">
+          <label className="mb-1 text-sm sm:text-base" htmlFor="password">Password</label>
+          <input
+            className="px-2 py-2 rounded-md focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-black sm:px-3 sm:py-3"
+            type="password"
+            placeholder="password"
+            onChange={passwordChangeHandler}
+            value={password}
+            required
+          />
+        </div>
+        <div className="flex justify-center items-center mb-4">
+          <button
+            className="bg-black text-white px-2 py-2 w-full rounded-md transition-all hover:bg-gray-800 sm:px-3 sm:py-3"
+            disabled={loading}
+          >
+            Sign Up
+          </button>
+        </div>
+      </form>
+      <div className="flex justify-center items-center mb-2 sm:mb-4">
         <p>OR</p>
       </div>
-
-      <div className="flex items-center justify-center mb-4">
-        <button className="px-3 py-3 w-full rounded-md ring-1 ring-black cursor-pointer flex justify-center items-center gap-1">
+      <div className="flex items-center justify-center mb-2 sm:mb-4">
+        <button
+          className="px-2 py-2 w-full rounded-md ring-1 ring-black cursor-pointer flex justify-center items-center gap-1 sm:px-3 sm:py-3"
+          onClick={signUpWithPopHandler}
+        >
         <span>Sign Up with</span>
         <span className="mt-1">
           <svg data-v-4b9d7e47="" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 272 92" width="65" height="18px">
@@ -50,10 +64,13 @@ export const SignUpForm = () => {
         </span>
         </button>
       </div>
-
       <div className="flex items-center justify-center gap-2 mb-4">
         <p className="text-sm">Already have an account?</p>
         <Link className="text-sm text-black hover:underline" to="/signin">Sign In</Link>
+      </div>
+      <div>
+        {emailInUse && <p className="mt-1 text-sm text-red-600 text-center">email already in use</p>}
+        { weakPassword && <p className="mt-1 text-sm text-red-600 text-center">Password should be at least 6 characters.</p>}
       </div>
     </div>
   )
