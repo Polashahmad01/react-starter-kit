@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit"
-import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup } from "firebase/auth"
+import { User, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signInWithPopup } from "firebase/auth"
 
 import { auth, provider } from "../utils/firebase"
 
@@ -21,6 +21,21 @@ export const signUp = createAsyncThunk<User, SignInCredentials>("auth/signUp", a
 export const signInWithGoogle = createAsyncThunk("auth/signInWithGoogle", async () => {
   const response = await signInWithPopup(auth, provider)
   return response.user as User
+})
+
+export const currentUserChecker = createAsyncThunk<User>("auth/currentUserChecker", async () => {
+  return new Promise<User>((resolve, reject) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      unsubscribe()
+
+      if (user) {
+        resolve(user)
+      }
+      else {
+        reject(new Error("No user found."))
+      }
+    })
+  })
 })
 
 interface AuthState {
@@ -77,6 +92,20 @@ const authSlice = createSlice({
         state.user = action.payload
       })
       .addCase(signUp.rejected, (state, action) => {
+        state.loading = false
+        state.error = action.error.message || "Something went wrong..."
+      })
+    builder
+      .addCase(currentUserChecker.pending, (state) => {
+        state.loading = true
+        state.error = null
+      })
+      .addCase(currentUserChecker.fulfilled, (state, action: PayloadAction<User>) => {
+        state.loading = false
+        state.user = action.payload
+        state.error = null
+      })
+      .addCase(currentUserChecker.rejected, (state, action) => {
         state.loading = false
         state.error = action.error.message || "Something went wrong..."
       })
