@@ -1,5 +1,7 @@
-import { FormEvent, ChangeEvent, useReducer, useEffect } from "react"
+import { FormEvent, ChangeEvent, useReducer, useEffect, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import { User } from "firebase/auth"
 
 import { RootState, AppDispatch } from "../../store"
 import { signUp, signInWithGoogle, SignInCredentials } from "../../store/authSlice"
@@ -37,8 +39,9 @@ export const useSignUpForm = () => {
   const error = useSelector((state: RootState) => state.auth.error)
   const dispatchActionToRedux = useDispatch<AppDispatch>()
   const { notifySuccess, notifyError } = useNotification()
+  const navigate = useNavigate()
 
-  useEffect(() => {
+  const showNotification = useCallback((user: User | null, error: string | null) => {
     if (user) {
       notifySuccess("Signed in successfully.")
     }
@@ -48,7 +51,15 @@ export const useSignUpForm = () => {
     else if (error?.includes("auth/weak-password")) {
       notifyError("Password should be at least 6 characters.")
     }
-  }, [error, notifyError, notifySuccess, user])
+  }, [notifyError, notifySuccess])
+
+  useEffect(() => {
+    if (user) {
+      navigate("/")
+    }
+
+    showNotification(user, error)
+  }, [error, navigate, showNotification, user])
 
   const emailChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: "SET_EMAIL", payload: event.target.value })

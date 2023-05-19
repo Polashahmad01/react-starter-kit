@@ -1,5 +1,7 @@
-import { FormEvent, ChangeEvent, useEffect, useReducer } from "react"
+import { FormEvent, ChangeEvent, useEffect, useReducer, useCallback } from "react"
 import { useSelector, useDispatch } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import { User } from "firebase/auth"
 
 import { RootState, AppDispatch } from "../../store"
 import { signIn, signInWithGoogle, SignInCredentials } from "../../store/authSlice"
@@ -37,9 +39,10 @@ export const useSignInForm = () => {
   const loading = useSelector((state: RootState) => state.auth.loading)
   const error = useSelector((state: RootState) => state.auth.error)
   const { notifySuccess, notifyError } = useNotification()
+  const navigate = useNavigate()
   const { email, password } = state
 
-  useEffect(() => {
+  const showNotification = useCallback((user: User | null, error: string | null) => {
     if (user) {
       notifySuccess("Signed in successfully.")
     }
@@ -49,7 +52,15 @@ export const useSignInForm = () => {
     else if (!user && error?.includes("(auth/wrong-password)")) {
       notifyError("Wrong password.")
     }
-  }, [error, notifyError, notifySuccess, user])
+  }, [notifyError, notifySuccess])
+
+  useEffect(() => {
+    if (user) {
+      navigate("/")
+    }
+    showNotification(user, error)
+
+  }, [error, navigate, showNotification, user])
 
   const emailChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
     dispatch({ type: "SET_EMAIL", payload: event.target.value })
